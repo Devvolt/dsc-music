@@ -13,7 +13,7 @@ Here's how to install **dsc-music** on your machine.
 
 ## Step 1: Installing the needed software.
 
-To use dsc-music you'll need to have [NodeJS](https://www.nodejs.org) and NPM installed on your computer.
+To use dsc-music you'll need to have [**NodeJS**](https://www.nodejs.org) and NPM installed on your computer.
 ### Linux:
 
 **BEWARE**: The NodeJS package name may vary between *node* and *nodejs*
@@ -42,11 +42,11 @@ wget
 
 ## Windows:
 
-Bruh go to the official site and download that nasty .exe file.
+Bruh go to the [**Official Site**](https://nodejs.org/en/download/current/) and download that nasty .exe file.
 
 ## Mac OS
 
-In Mac OS you can both use the [installer](https://www.nodejs.org) or you can install it using [Homebrew](https://brew.sh/).
+In Mac OS you can both use the [**Installer**](https://nodejs.org/en/download/current/) or you can install it using [**Homebrew**](https://brew.sh/).
 
 ```bash
 brew install nodejs
