@@ -1,6 +1,6 @@
 {
   "name": "dsc-music",
-  "version": "1.0.3",
+  "version": "1.0.7",
   "description": "Descrizione",
   "main": "index.js",
   "scripts": {
