@@ -1,6 +1,6 @@
 {
   "name": "dsc-music",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "Descrizione",
   "main": "index.js",
   "scripts": {
@@ -11,7 +11,7 @@
     "url": "git+https://github.com/Devvolt/dsc-music.git"
   },
   "author": "Guglieeee, Buffolollo and GenericB0i",
-  "license": "GPL v3",
+  "license": "GPL-3.0",
   "keywords": [
     "Guglie è Brutto"
   ],
