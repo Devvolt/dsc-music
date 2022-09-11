@@ -58,7 +58,7 @@ brew install nodejs
 npm i --save dsc-music
 ```
 
-#Quick Start
+# Quick Start
 
 This is a simple guide if you just want to get a simple music bot up and running.
 
