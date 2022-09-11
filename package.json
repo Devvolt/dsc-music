@@ -1,6 +1,6 @@
 {
   "name": "dsc-music",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Descrizione",
   "main": "index.js",
   "scripts": {
@@ -12,8 +12,17 @@
   },
   "author": "Guglieeee and Buffolollo",
   "license": "ISC",
+  "keywords": [
+    "Guglie è Brutto"
+  ],
   "bugs": {
     "url": "https://github.com/Devvolt/dsc-music/issues"
   },
-  "homepage": "https://github.com/Devvolt/dsc-music#readme"
+  "homepage": "https://github.com/Devvolt/dsc-music#readme",
+  "dependencies": {
+    "@discordjs/opus": "^0.8.0",
+    "@discordjs/voice": "^0.11.0",
+    "discord-ytdl-core": "^5.0.4",
+    "libsodium-wrappers": "^0.7.10"
+  }
 }
