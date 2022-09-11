@@ -2,7 +2,12 @@
  
 This repository provides a semplified version of the different discordjs components ( and dependencies ) needed to make a functioning Discord Music Bot.
 
-# Installing (COMING SOON)
+# Features
+
+- Simplified bot creation process
+- Easily implementable functions (play, skip, filters, playlist)
+
+# Installing process
 
 Here's how to download **dsc-music** on your machine.
 
@@ -37,5 +42,14 @@ wget
 
 ## Windows:
 
+Bruh go to the official site and download that nasty .exe file.
 
+## OSX (MacOS)
 
+no.
+
+## Step 2: Download the library
+
+```bash
+npm i --save dsc-music
+```
