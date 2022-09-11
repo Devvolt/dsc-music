@@ -7,13 +7,13 @@ This repository provides a semplified version of the different discordjs compone
 - Simplified bot creation process
 - Easily implementable functions (play, skip, filters, playlist)
 
-# Installing process
+# Installation
 
-Here's how to download **dsc-music** on your machine.
+Here's how to install **dsc-music** on your machine.
 
 ## Step 1: Installing the needed software.
 
-First of all you'll need to install NodeJS and NPM.
+To use dsc-music you'll need to have [NodeJS](https://www.nodejs.org) and NPM installed on your computer.
 ### Linux:
 
 **BEWARE**: The NodeJS package name may vary between *node* and *nodejs*
@@ -44,12 +44,22 @@ wget
 
 Bruh go to the official site and download that nasty .exe file.
 
-## OSX (MacOS)
+## Mac OS
 
-no.
+In Mac OS you can both use the [installer](https://www.nodejs.org) or you can install it using [Homebrew](https://brew.sh/).
+
+```bash
+brew install nodejs
+```
 
 ## Step 2: Download the library
 
 ```bash
 npm i --save dsc-music
 ```
+
+#Quick Start
+
+This is a simple guide if you just want to get a simple music bot up and running.
+
+|---YE SO WE GOT NOTHING HERE LOL---|
