@@ -1,5 +1,5 @@
 {
-  "name": "dsc-music",
+  "name": "@devvolt/dsc-music",
   "version": "1.0.8",
   "description": "This repository provides a semplified version of the different discordjs components ( and dependencies ) needed to make a functioning Discord Music Bot.",
   "main": "index.js",
