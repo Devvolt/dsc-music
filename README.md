@@ -1,4 +1,14 @@
-# dsc-music
+<div align="center">
+
+# DSC-MUSIC
+
+Discord.JS Music System
+
+![Discord](https://img.shields.io/static/v1?label=Discord.JS&message=V14&color=red)
+![NodeJS](https://img.shields.io/static/v1?label=Node.JS&message=V16.17.0&color=green)
+![Javascript](https://img.shields.io/static/v1?label=Code%20Language&message=Javascript&color=yellow)
+
+</div>
  
 This repository provides a semplified version of the different discordjs components ( and dependencies ) needed to make a functioning Discord Music Bot.
 
@@ -14,9 +24,10 @@ Here's how to install **dsc-music** on your machine.
 ## Step 1: Installing the needed software.
 
 To use dsc-music you'll need to have [**NodeJS**](https://www.nodejs.org) and NPM installed on your computer.
+
 ### Linux:
 
-**BEWARE**: The NodeJS package name may vary between *node* and *nodejs*
+**BEWARE**: The NodeJS package name may vary between _node_ and _nodejs_
 
 Debian/Ubuntu based:
 
@@ -37,7 +48,7 @@ Generic (Work In Progress):
 
 ```bash
 mkdir node_download && cd node_download
-wget 
+wget
 ```
 
 ## Windows:
