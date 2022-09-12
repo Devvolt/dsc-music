@@ -1,9 +1,5 @@
 {
-<<<<<<< HEAD
-  "name": "@devvolt/dsc-music",
-=======
   "name": "dsc-music",
->>>>>>> a8df02e7aa73989538cbecadcbaaefd963da8784
   "version": "1.0.82",
   "description": "This repository provides a semplified version of the different discordjs components ( and dependencies ) needed to make a functioning Discord Music Bot.",
   "main": "index.js",
@@ -33,7 +29,9 @@
     "@discordjs/voice": "^0.11.0",
     "discord-ytdl-core": "^5.0.4",
     "discord.js": "^14.3.0",
+    "isomorphic-unfetch": "^3.1.0",
     "libsodium-wrappers": "^0.7.10",
-    "soundcloud-scraper": "^5.0.3"
+    "soundcloud-scraper": "^5.0.3",
+    "spotify-url-info": "^3.1.8"
   }
 }

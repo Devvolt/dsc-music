@@ -24,11 +24,12 @@ module.exports = {
   /**
    *
    * @param {discord.Message} message
-   * @param {String[]} query
+   * @param {string} query
    */
   play: async function (message, query) {
     let trackToPlay;
     if (query.match(spotifySongRegex)) {
+      trackToPlay = await this._searchTracks(query);
     }
     if (query.match(spotifyPlaylistRegex)) {
       return this._spotifyPlaylist(query);
@@ -38,12 +39,30 @@ module.exports = {
       if (!songInfo) throw new Error("No data of the video found");
     }
     {
-      const result = await searcher.search(query, { limit: 1, type: "video" });
-      if (!result || result.length < 1) throw new Error("No videos found!");
+      const result = await this._searchTrack();
     }
   },
-  _searchTracks: function (query) {},
-  _spotifyPlaylist: function (query) {},
+  _createQueue: async function (message) {},
+  _searchTrack: async function (query) {
+    let result;
+    if (query.match(spotifySongRegex)) {
+      const data = await spotify.getPreview(query);
+      result = await searcher.search(`${data.title} ${data.artist}`, {
+        type: "video",
+        limit: 1,
+      });
+      if (result.length < 1 || !result)
+        throw new Error("I have not found any video!");
+    } else {
+      result = await searcher.search(query, {
+        type: "video",
+        limit: 1,
+      });
+      if (result.length < 1 || !result)
+        throw new Error("I have not found any video!");
+    }
+  },
+  _spotifyPlaylist: async function (query) {},
 };
 
 /* END MUSIC FUNCTIONS */
