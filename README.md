@@ -5,7 +5,7 @@
 Discord.JS Music System
   
 ![Discord](https://img.shields.io/static/v1?label=Discord.JS&message=V14&color=red)
-![NodeJS](https://img.shields.io/static/v1?label=Node.JS&message=V16.10.0&color=green)
+![NodeJS](https://img.shields.io/static/v1?label=Node.JS&message=V16.16.0&color=green)
 ![Javascript](https://img.shields.io/static/v1?label=Code%20Language&message=Javascript&color=yellow)
 
 </div>
