@@ -41,17 +41,14 @@ class Player extends EventEmitter {
       const track = await this._searchTrack(query);
       const songInfo = await ytdl.getBasicInfo(track.url);
       if (!songInfo) throw new Error("No data found of the video");
-      return (trackToPlay = new Track(songInfo, message));
-    }
-    if (query.match(spotifyPlaylistRegex)) {
+      trackToPlay = new Track(songInfo, message);
+    } else if (query.match(spotifyPlaylistRegex)) {
       return this._spotifyPlaylist(query);
-    }
-    if (searcher.validate(query, "VIDEO")) {
+    } else if (searcher.validate(query, "VIDEO")) {
       const songInfo = await ytdl.getBasicInfo(query);
       if (!songInfo) throw new Error("No data found of the video");
-      return (trackToPlay = new Track(songInfo, message));
-    }
-    {
+      trackToPlay = new Track(songInfo, message);
+    } else {
       const result = await this._searchTrack(query);
       const songInfo = await ytdl.getBasicInfo(result.url);
       if (!songInfo) throw new Error("No data found of the video");
