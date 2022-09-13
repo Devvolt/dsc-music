@@ -93,16 +93,14 @@ module.exports = {
         type: "video",
         limit: 1,
       });
-      if (result.length < 1 || !result)
-        throw new Error("I have not found any video!");
+      if (r.length < 1 || !r) throw new Error("I have not found any video!");
       result = r[0];
     } else {
       let r = await searcher.search(query, {
         type: "video",
         limit: 1,
       });
-      if (result.length < 1 || !result)
-        throw new Error("I have not found any video!");
+      if (r.length < 1 || !r) throw new Error("I have not found any video!");
       result = r[0];
     }
     return result;
@@ -131,6 +129,30 @@ module.exports = {
     emitter.emit("skipTrack", message);
     queue.player.stop();
     return queue;
+  },
+  /**
+   *
+   * @param {Discord.Message} message
+   */
+  pause: async function (message) {
+    const queue = queues.find((g) => g.guildId == message.guild.id);
+    if (!queue) throw new Error("Not playing anything!");
+    if (queue.paused == true) throw new Error("Queue already paused!");
+    queue.player.pause();
+    queue.paused = true;
+    return emitter.emit("queuePaused", message);
+  },
+  /**
+   *
+   * @param {Discord.Message} message
+   */
+  resume: async function (message) {
+    const queue = queues.find((g) => g.guildId == message.guild.id);
+    if (!queue) throw new Error("Not playing anything!");
+    if (queue.paused == false) throw new Error("Queue already playing!");
+    queue.player.unpause();
+    queue.paused = false;
+    return emitter.emit("queueResume", message);
   },
   /**
    *
