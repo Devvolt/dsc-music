@@ -35,7 +35,10 @@ module.exports = {
   play: async function (message, query) {
     let trackToPlay;
     if (query.match(spotifySongRegex)) {
-      trackToPlay = await this._searchTracks(query);
+      const track = await this._searchTrack(query);
+      const songInfo = await ytdl.getBasicInfo(track.url);
+      if (!songInfo) throw new Error("No data found of the video");
+      trackToPlay = new Track(songInfo, message);
     }
     if (query.match(spotifyPlaylistRegex)) {
       return this._spotifyPlaylist(query);
@@ -44,19 +47,19 @@ module.exports = {
       const songInfo = await ytdl.getBasicInfo(query);
       if (!songInfo) throw new Error("No data found of the video");
       trackToPlay = new Track(songInfo, message);
-      if (trackToPlay) {
-        const queue = queues.get(message.guild.id);
-        if (!queue) {
-          return this._createQueue(message, trackToPlay);
-        } else {
-          const queue = await this._addTrackToQueue(message, trackToPlay);
-          emitter.emit(
-            "trackAdded",
-            message,
-            queue.songs[0],
-            queue.songs[queue.songs.length - 1]
-          );
-        }
+    }
+    if (trackToPlay) {
+      const queue = queues.get(message.guild.id);
+      if (!queue) {
+        return this._createQueue(message, trackToPlay);
+      } else {
+        const queue = await this._addTrackToQueue(message, trackToPlay);
+        emitter.emit(
+          "trackAdded",
+          message,
+          queue.songs[0],
+          queue.songs[queue.songs.length - 1]
+        );
       }
     }
     {
@@ -86,19 +89,21 @@ module.exports = {
     let result;
     if (query.match(spotifySongRegex)) {
       const data = await spotify.getPreview(query);
-      result = await searcher.search(`${data.title} ${data.artist}`, {
+      let r = await searcher.search(`${data.title} ${data.artist}`, {
         type: "video",
         limit: 1,
       });
       if (result.length < 1 || !result)
         throw new Error("I have not found any video!");
+      result = r[0];
     } else {
-      result = await searcher.search(query, {
+      let r = await searcher.search(query, {
         type: "video",
         limit: 1,
       });
       if (result.length < 1 || !result)
         throw new Error("I have not found any video!");
+      result = r[0];
     }
     return result;
   },
