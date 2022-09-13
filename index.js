@@ -21,11 +21,12 @@ const {
   AudioResource,
   AudioPlayerStatus,
 } = require("@discordjs/voice");
+
 /* START MUSIC FUNCTIONS */
 
 class Player extends EventEmitter {
   constructor(client) {
-    if (!client) throw new SyntaxError("Invalid Discord client");
+    if (!client) throw new SyntaxError("Invalid Discord client!");
     super();
     this.queues = new Discord.Collection();
   }
@@ -34,41 +35,37 @@ class Player extends EventEmitter {
    * @param {Discord.Message} message
    * @param {string} query
    */
-  play(message, query) {
-    return new Promise(async (resolve) => {
-      let trackToPlay;
-      if (query.match(spotifySongRegex)) {
-        const track = await this._searchTrack(query);
-        const songInfo = await ytdl.getBasicInfo(track.url);
-        if (!songInfo) throw new Error("No data found of the video");
-        trackToPlay = new Track(songInfo, message);
+  async play(message, query) {
+    let trackToPlay;
+    if (query.match(spotifySongRegex)) {
+      const track = await this._searchTrack(query);
+      const songInfo = await ytdl.getBasicInfo(track.url);
+      if (!songInfo) throw new Error("No data found of the video");
+      return (trackToPlay = new Track(songInfo, message));
+    }
+    if (query.match(spotifyPlaylistRegex)) {
+      return this._spotifyPlaylist(query);
+    }
+    if (searcher.validate(query, "VIDEO")) {
+      const songInfo = await ytdl.getBasicInfo(query);
+      if (!songInfo) throw new Error("No data found of the video");
+      return (trackToPlay = new Track(songInfo, message));
+    }
+    {
+      const result = await this._searchTrack(query);
+      const songInfo = await ytdl.getBasicInfo(result.url);
+      if (!songInfo) throw new Error("No data found of the video");
+      trackToPlay = new Track(songInfo, message);
+    }
+    if (trackToPlay) {
+      const queue = this.queues.get(message.guild.id);
+      if (!queue) {
+        return this._createQueue(message, trackToPlay);
+      } else {
+        const queue = await this._addTrackToQueue(message, trackToPlay);
+        this.emit("trackAdded", queue.songs[queue.songs.length - 1], message);
       }
-      if (query.match(spotifyPlaylistRegex)) {
-        return this._spotifyPlaylist(query);
-      }
-      if (searcher.validate(query, "VIDEO")) {
-        const songInfo = await ytdl.getBasicInfo(query);
-        if (!songInfo) throw new Error("No data found of the video");
-        trackToPlay = new Track(songInfo, message);
-      }
-      if (trackToPlay) {
-        const queue = this.queues.get(message.guild.id);
-        if (!queue) {
-          return this._createQueue(message, trackToPlay);
-        } else {
-          const queue = await this._addTrackToQueue(message, trackToPlay);
-          this.emit(
-            "trackAdded",
-            message,
-            queue.songs[0],
-            queue.songs[queue.songs.length - 1]
-          );
-        }
-      }
-      {
-        const result = await this._searchTrack(query);
-      }
-    });
+    }
   }
   /**
    *
@@ -79,7 +76,7 @@ class Player extends EventEmitter {
     const channel = message.member.voice.channel;
     if (!channel) throw new Error("Not connected to voice channel!");
     const queue = new Queue(message, channel);
-    queues.set(message.guild.id, queue);
+    this.queues.set(message.guild.id, queue);
     const connection = joinVoiceChannel({
       channelId: channel.id,
       guildId: channel.guild.id,
@@ -89,27 +86,32 @@ class Player extends EventEmitter {
     queue.songs.push(track);
     this._playTrack(queue);
   }
-  _searchTrack(query) {
-    return new Promise(async (resolve) => {
-      let result;
-      if (query.match(spotifySongRegex)) {
-        const data = await spotify.getPreview(query);
-        let r = await searcher.search(`${data.title} ${data.artist}`, {
-          type: "video",
-          limit: 1,
-        });
-        if (r.length < 1 || !r) throw new Error("I have not found any video!");
-        result = r[0];
-      } else {
-        let r = await searcher.search(query, {
-          type: "video",
-          limit: 1,
-        });
-        if (r.length < 1 || !r) throw new Error("I have not found any video!");
-        result = r[0];
-      }
-      return result;
-    });
+  async _searchTrack(query) {
+    let result;
+    if (query.match(spotifySongRegex)) {
+      const data = await spotify.getPreview(query);
+      let r = await searcher.search(`${data.title} ${data.artist}`, {
+        type: "video",
+        limit: 1,
+      });
+      if (r.length < 1 || !r) throw new Error("I have not found any video!");
+      result = r[0];
+    } else if (searcher.validate(query, "VIDEO")) {
+      let r = await searcher.search(query, {
+        type: "video",
+        limit: 1,
+      });
+      if (r.length < 1 || !r) throw new Error("I have not found any video!");
+      result = r[0];
+    } else {
+      let r = await searcher.search(query, {
+        type: "video",
+        limit: 1,
+      });
+      if (r.length < 1 || !r) throw new Error("I have not found any video!");
+      result = r[0];
+    }
+    return result;
   }
   /**
    *
@@ -117,14 +119,12 @@ class Player extends EventEmitter {
    * @param {Track} track
    * @returns {Queue}
    */
-  _addTrackToQueue(message, track) {
-    return new Promise(async (resolve) => {
-      const queue = await this.getQueue(message);
-      if (!queue) throw new Error("Not playing anything!");
-      if (!track) throw new Error("No track to add to queue!");
-      queue.songs.push(track);
-      return queue;
-    });
+  async _addTrackToQueue(message, track) {
+    const queue = await this.getQueue(message);
+    if (!queue) throw new Error("Not playing anything!");
+    if (!track) throw new Error("No track to add to queue!");
+    queue.songs.push(track);
+    return queue;
   }
   /**
    *
@@ -133,7 +133,7 @@ class Player extends EventEmitter {
    */
   skip(message) {
     const queue = this.queues.get(message.guild.id);
-    if (!queue) this.emit("noQueue");
+    if (!queue) this.emit("noQueue", message);
     queue.player.stop();
     return queue;
   }
@@ -142,8 +142,8 @@ class Player extends EventEmitter {
    * @param {Discord.Message} message
    */
   pause(message) {
-    const queue = queues.find((g) => g.guildId == message.guild.id);
-    if (!queue) return this.emit("noQueue");
+    const queue = this.queues.find((g) => g.guildId == message.guild.id);
+    if (!queue) return this.emit("noQueue", message);
     if (queue.paused == true) throw new Error("Queue already paused!");
     queue.player.pause();
     queue.paused = true;
@@ -154,8 +154,8 @@ class Player extends EventEmitter {
    * @param {Discord.Message} message
    */
   resume(message) {
-    const queue = queues.find((g) => g.guildId == message.guild.id);
-    if (!queue) return this.emit("noQueue");
+    const queue = this.queues.find((g) => g.guildId == message.guild.id);
+    if (!queue) return this.emit("noQueue", message);
     if (queue.paused == false) throw new Error("Queue already playing!");
     queue.player.unpause();
     queue.paused = false;
@@ -166,6 +166,16 @@ class Player extends EventEmitter {
    * @param {Discord.Message} message
    * @returns
    */
+  /**
+   * @param {Discord.Message} message
+   * @param {number} num
+   */
+  setVolume(message, num) {
+    const queue = this.queues.get(message.guild.id);
+    if (!queue) return this.emit("noQueue", message);
+    queue.resource.setVolumeLogarithmic(num / 100);
+    queue.volume = num;
+  }
   getQueue(message) {
     const queue = this.queues.get(message.guild.id);
     return queue;
@@ -211,6 +221,14 @@ class Player extends EventEmitter {
   }
 }
 
+/* END MUSIC FUNCTIONS */
+
 module.exports = { Player };
 
-/* END MUSIC FUNCTIONS */
+/*
+trackStart: (track, message)
+noQueue: (message)
+queueResume: (message)
+queuePaused: (message)
+trackAdded: (track, message)
+*/
