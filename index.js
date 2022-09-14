@@ -43,7 +43,7 @@ class Player extends EventEmitter {
       if (!songInfo) throw new Error("No data found of the video");
       trackToPlay = new Track(songInfo, message);
     } else if (query.match(spotifyPlaylistRegex)) {
-      return this._spotifyPlaylist(query);
+      return this._spotifyPlaylist(message, query);
     } else if (searcher.validate(query, "VIDEO")) {
       const songInfo = await ytdl.getBasicInfo(query);
       if (!songInfo) throw new Error("No data found of the video");
@@ -126,6 +126,19 @@ class Player extends EventEmitter {
   /**
    *
    * @param {Discord.Message} message
+   * @param {Track} track
+   * @returns {Queue}
+   */
+  async _addTracksToQueue(message, tracks) {
+    const queue = await this.getQueue(message);
+    if (!queue) throw new Error("Not playing anything!");
+    if (!tracks) throw new Error("No track to add to queue!");
+    queue.songs.push(...tracks);
+    return queue;
+  }
+  /**
+   *
+   * @param {Discord.Message} message
    * @returns
    */
   skip(message) {
@@ -177,7 +190,45 @@ class Player extends EventEmitter {
     const queue = this.queues.get(message.guild.id);
     return queue;
   }
-  _spotifyPlaylist(query) {}
+  async _spotifyPlaylist(message, query) {
+    const playlist = await spotify.getTracks(query);
+    const data = await spotify.getData(query);
+    this.emit("PlaylistCreate", message, data);
+    const tracks = [];
+    var ForLoop = 0;
+    var noResult = 0;
+    var interrupt = 0;
+    for (let i = 0; i < playlist.length; i++) {
+      const query = `${playlist[i].name} ${playlist[i].artists[0].name}`;
+      const result = await searcher
+        .search(query, { type: "video", limit: 1 })
+        .catch((err) => {});
+      if (result.length < 1 || !result) {
+        noResult++; // could be used later for skipped tracks due to result not being found //tipo per quanti errori
+        continue;
+      }
+      const songInfo = await ytdl.getBasicInfo(result[0].url);
+      tracks.push(songInfo);
+      ForLoop++;
+    }
+    playlist.tracks = tracks.map((data) => new Track(data, message));
+    this.emit("PlaylistDone", message, data);
+    if (this.isPlaying(message)) {
+      const queue = this._addTracksToQueue(message, playlist.tracks);
+      this.emit("playlistAdd", message, queue, playlist);
+    } else {
+      const track = playlist.tracks.shift();
+      this._createQueue(message, track);
+      this._addTracksToQueue(message, playlist.tracks);
+    }
+  }
+  /**
+   * Check whether there is a music played in the server
+   * @param {Discord.Message} message
+   */
+  isPlaying(message) {
+    return this.queues.some((g) => g.guildID === message.guild.id);
+  }
   /**
    *
    * @param {Queue} queue
